@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>FLIXUX</title>
+  <!-- أيقونات Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      transition: background-color 1s ease, color 1s ease;
+    }
+
+    /* الوضع النهاري */
+    body.light {
+      background-color: #f5f5f5;
+      color: #222;
+    }
+
+    /* الوضع الليلي */
+    body.dark {
+      background-color: #1e1e1e;
+      color: #f5f5f5;
+    }
+
+    /* فيديو الخلفية */
+    #bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    /* الطبقة العلوية */
+    .overlay {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+      transition: color 1s ease;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 15px 25px;
+      font-size: 18px;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn.whatsapp { background: #25D366; }
+    .btn.telegram { background: #0088cc; }
+    .btn.instagram { background: #E1306C; }
+
+    .btn:hover {
+      opacity: 0.8;
+    }
+
+    /* زر الصوت */
+    #sound-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background: #2980b9;
+      color: white;
+      transition: background-color 0.6s ease, transform 0.3s ease;
+    }
+
+    #sound-btn:hover {
+      background-color: #1c5980;
+      transform: scale(1.05);
+    }
+
+    /* زر الوضع */
+    #toggleBtn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #444;
+      color: white;
+      transition: background-color 0.6s ease;
+    }
+
+    #toggleBtn:hover {
+      background: #666;
+    }
+  </style>
+</head>
+<body class="light">
+
+  <!-- فيديو الخلفية -->
+  <video autoplay loop id="bg-video" muted>
+    <source src="bg.mp4" type="video/mp4">
+    المتصفح لا يدعم الفيديو.
+  </video>
+
+  <!-- المحتوى -->
+  <div class="overlay">
+    <h1>YEAH ITS FLIX</h1>
+
+    <div class="buttons">
+      <a href="https://wa.me/201014508636" class="btn whatsapp"><i class="fab fa-whatsapp"></i> Whatsapp</a>
+      <a href="https://t.me/FLIXUXW" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+      <a href="https://t.me/flashaudio" class="btn telegram"><i class="fab fa-telegram"></i> Telegram Channel</a>
+      <a href="https://instagram.com/username" class="btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+    </div>
+
+    <!-- أزرار التحكم -->
+    <button id="sound-btn">🔊 تشغيل الصوت</button>
+    <button id="toggleBtn" onclick="toggleMode()">🌙 الوضع الليلي</button>
+  </div>
+
+  <!-- ملف الصوت -->
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <!-- سكربت -->
+  <script>
+    const video = document.getElementById("bg-video");
+    const soundBtn = document.getElementById("sound-btn");
+    const clickSound = document.getElementById("click-sound");
+    const buttons = document.querySelectorAll(".btn");
+
+    // أول ضغطة على أي مكان تفعل الصوت للفيديو
+    document.body.addEventListener("click", () => {
+      video.muted = false;
+      video.play();
+    }, { once: true });
+
+    // زر الصوت
+    soundBtn.addEventListener("click", () => {
+      if (video.muted) {
+        video.muted = false;
+        soundBtn.textContent = "🔇 كتم الصوت";
+      } else {
+        video.muted = true;
+        soundBtn.textContent = "🔊 تشغيل الصوت";
+      }
+    });
+
+    // زر الوضع الليلي/النهاري
+    function toggleMode() {
+      let body = document.body;
+      let btn = document.getElementById("toggleBtn");
+
+      body.classList.toggle("dark");
+      body.classList.toggle("light");
+
+      if (body.classList.contains("dark")) {
+        btn.textContent = "🌞 الوضع النهاري";
+      } else {
+        btn.textContent = "🌙 الوضع الليلي";
+      }
+
+      localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    // استرجاع الوضع عند فتح الموقع
+    window.onload = () => {
+      let savedTheme = localStorage.getItem("theme");
+      let btn = document.getElementById("toggleBtn");
+
+      if (savedTheme) {
+        document.body.className = savedTheme;
+        btn.textContent = savedTheme === "dark" ? "🌞 الوضع النهاري" : "🌙 الوضع الليلي";
+      }
+    }
+
+    // إضافة صوت عند الضغط على الأزرار
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        clickSound.currentTime = 0;
+        clickSound.play();
+      });
+    });
+  </script>
+
+</body>
+</html>

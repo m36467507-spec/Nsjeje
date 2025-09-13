@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>FLIXUX</title>
+  <title>FLIXUWX</title>
   <!-- أيقونات Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -47,24 +47,51 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.45);
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     h1 {
       font-size: 3em;
-      margin-bottom: 20px;
+      margin: 5px 0 10px 0;
       transition: color 1s ease;
+      letter-spacing: 2px;
+    }
+
+    /* عنوان فرعي انجليزي */
+    .subtitle {
+      font-size: 1.25em;
+      margin: 0;
+      opacity: 0.95;
+    }
+
+    /* سطر عربي */
+    .arabic {
+      direction: rtl;
+      font-size: 1.1em;
+      margin-top: 8px;
+    }
+
+    .description {
+      font-size: 0.95em;
+      margin-top: 10px;
+      max-width: 720px;
+      line-height: 1.4;
+      opacity: 0.95;
     }
 
     .buttons {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 12px;
+      margin-top: 18px;
+      width: 260px;
     }
 
     .btn {
-      padding: 15px 25px;
-      font-size: 18px;
+      padding: 12px 18px;
+      font-size: 16px;
       color: white;
       text-decoration: none;
       border-radius: 8px;
@@ -80,8 +107,136 @@
     .btn.instagram { background: #E1306C; }
 
     .btn:hover {
-      opacity: 0.8;
+      opacity: 0.85;
+      transform: translateY(-2px);
     }
+
+    /* أزرار التحكم */
+    #sound-btn, #toggleBtn {
+      margin-top: 14px;
+      padding: 10px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      transition: background-color 0.3s ease, transform 0.15s ease;
+    }
+
+    #sound-btn { background: #2980b9; }
+    #toggleBtn { background: #444; }
+
+    #sound-btn:hover { transform: scale(1.03); }
+    #toggleBtn:hover { background: #666; }
+
+    /* Responsive */
+    @media (min-width: 800px) {
+      .buttons { flex-direction: row; width: auto; gap: 14px; }
+      .btn { font-size: 17px; padding: 14px 22px; }
+    }
+  </style>
+</head>
+<body class="light">
+
+  <!-- فيديو الخلفية -->
+  <video autoplay loop id="bg-video" muted>
+    <source src="bg.mp4" type="video/mp4">
+    المتصفح لا يدعم الفيديو.
+  </video>
+
+  <!-- المحتوى -->
+  <div class="overlay">
+    <h1>FLIX</h1>
+
+    <!-- عنوان انجليزي قصير -->
+    <p class="subtitle">I am from Team HX — WhatsApp crash team</p>
+
+
+    
+
+    
+
+    <div class="buttons">
+      <a href="https://wa.me/201014508636" class="btn whatsapp"><i class="fab fa-whatsapp"></i> Whatsapp</a>
+      <a href="https://t.me/FLIXUXW" class="btn telegram"><i class="fab fa-telegram"></i> Telegram</a>
+      <a href="https://t.me/flashaudio" class="btn telegram"><i class="fab fa-telegram"></i> Telegram Channel</a>
+      <a href="https://instagram.com/username" class="btn instagram"><i class="fab fa-instagram"></i> Instagram</a>
+    </div>
+
+    <!-- أزرار التحكم -->
+    <button id="sound-btn">🔊 تشغيل الصوت</button>
+    <button id="toggleBtn" onclick="toggleMode()">🌙 الوضع الليلي</button>
+  </div>
+
+  <!-- ملف الصوت -->
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <!-- سكربت -->
+  <script>
+    const video = document.getElementById("bg-video");
+    const soundBtn = document.getElementById("sound-btn");
+    const clickSound = document.getElementById("click-sound");
+    const buttons = document.querySelectorAll(".btn");
+
+    // أول ضغطة على أي مكان تفعل الصوت للفيديو
+    document.body.addEventListener("click", () => {
+      video.muted = false;
+      video.play();
+    }, { once: true });
+
+    // زر الصوت
+    soundBtn.addEventListener("click", () => {
+      if (video.muted) {
+        video.muted = false;
+        soundBtn.textContent = "🔇 كتم الصوت";
+      } else {
+        video.muted = true;
+        soundBtn.textContent = "🔊 تشغيل الصوت";
+      }
+    });
+
+    // زر الوضع الليلي/النهاري
+    function toggleMode() {
+      let body = document.body;
+      let btn = document.getElementById("toggleBtn");
+
+      body.classList.toggle("dark");
+      body.classList.toggle("light");
+
+      if (body.classList.contains("dark")) {
+        btn.textContent = "🌞 الوضع النهاري";
+      } else {
+        btn.textContent = "🌙 الوضع الليلي";
+      }
+
+      localStorage.setItem("theme", body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    // استرجاع الوضع عند فتح الموقع
+    window.onload = () => {
+      let savedTheme = localStorage.getItem("theme");
+      let btn = document.getElementById("toggleBtn");
+
+      if (savedTheme) {
+        document.body.className = savedTheme;
+        btn.textContent = savedTheme === "dark" ? "🌞 الوضع النهاري" : "🌙 الوضع الليلي";
+      }
+    }
+
+    // إضافة صوت عند الضغط على الأزرار
+    buttons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        clickSound.currentTime = 0;
+        clickSound.play();
+        // روابط خارجية: افتح في تبويب جديد
+        // (إذا كانت الروابط داخلية في نفس الموقع احذف السطر التالي)
+        e.target.closest('a')?.setAttribute('target','_blank');
+      });
+    });
+  </script>
+
+</body>
+</html>    }
 
     /* زر الصوت */
     #sound-btn {

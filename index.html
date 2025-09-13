@@ -1,85 +1,222 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>FLIXUWX</title>
-  <!-- أيقونات Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-      transition: background-color 1s ease, color 1s ease;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLAX UI</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --color1: #3f51b5;
+  --color2: #7e57c2;
+  --color3: #00e5ff;
+  --bg-dark: #0a0a0a;
+  --text: #fff;
+}
+* {margin:0;padding:0;box-sizing:border-box}
+body {
+  font-family: 'Tajawal', sans-serif;
+  color: var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body.light { background:#f5f5f5; color:#222; }
+body.dark { background:#0a0a0a; color:#fff; }
 
-    /* الوضع النهاري */
-    body.light {
-      background-color: #f5f5f5;
-      color: #222;
-    }
+#bg-video {
+  position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+}
+canvas#stars {
+  position: fixed;top:0;left:0;width:100%;height:100%;z-index:-1;
+  pointer-events:none;
+}
 
-    /* الوضع الليلي */
-    body.dark {
-      background-color: #1e1e1e;
-      color: #f5f5f5;
-    }
+.container {
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-height:100vh;z-index:2;position:relative;padding:20px;
+  animation: fadeIn 1s ease;
+}
+@keyframes fadeIn {from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);opacity:1;}}
+.neon-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size:3.5em;font-weight:900;text-align:center;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--color1),var(--color2),var(--color3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 20px var(--color2);
+  margin-bottom:20px;
+}
+.subtitle {font-size:1.2em;text-align:center;opacity:.85;margin-bottom:20px;}
+.button,.neon-button {
+  padding:15px 35px;margin:10px;border:none;cursor:pointer;border-radius:40px;
+  font-size:1.1em;font-weight:600;letter-spacing:1px;
+  background:linear-gradient(135deg,var(--color1),var(--color2));
+  color:var(--text);box-shadow:0 0 15px var(--color2),0 0 30px var(--color3);
+  transition:.3s;position:relative;overflow:hidden;
+}
+.button:hover,.neon-button:hover {
+  transform:translateY(-5px) scale(1.05);
+  box-shadow:0 0 25px var(--color1),0 0 50px var(--color2),0 0 100px var(--color3);
+}
+.buttons-container {display:flex;flex-direction:column;gap:15px;margin-top:25px;width:100%;max-width:500px}
+.video-grid {
+  display:flex;flex-wrap:wrap;justify-content:center;gap:25px;margin-top:30px;
+}
+.video-card {
+  width:280px;border-radius:15px;overflow:hidden;cursor:pointer;
+  background:rgba(255,255,255,.05);backdrop-filter:blur(5px);
+  box-shadow:0 0 20px rgba(126,87,194,.6);
+  transform-style:preserve-3d;transition:transform .3s,box-shadow .3s;
+}
+.video-card:hover {
+  transform:rotateY(8deg) scale(1.05);
+  box-shadow:0 0 30px var(--color2),0 0 60px var(--color3);
+}
+.video-card img {width:100%;height:170px;object-fit:cover;}
+.video-card span {display:block;padding:12px;text-align:center;font-weight:600;}
+.back-arrow {
+  position:fixed;bottom:20px;right:20px;width:55px;height:55px;border:none;
+  border-radius:50%;cursor:pointer;font-size:1.5em;
+  background:linear-gradient(135deg,var(--color1),var(--color2));
+  color:#fff;box-shadow:0 0 20px var(--color2);transition:.3s;
+  animation:pulse 1.5s infinite;z-index:5;
+}
+.back-arrow:hover {transform:scale(1.15);}
+@keyframes pulse {
+  0%{box-shadow:0 0 10px var(--color2);}
+  50%{box-shadow:0 0 25px var(--color3);}
+  100%{box-shadow:0 0 10px var(--color2);}
+}
+/* ازرار اضافية */
+.top-controls {
+  position:fixed;top:15px;left:15px;display:flex;gap:10px;z-index:5;
+}
+.control-btn {
+  padding:10px 15px;border:none;border-radius:8px;cursor:pointer;
+  background:rgba(0,0,0,0.6);color:#fff;transition:.3s;
+}
+.control-btn:hover {transform:scale(1.05);background:rgba(0,0,0,0.8);}
+</style>
+</head>
+<body class="dark">
 
-    /* فيديو الخلفية */
-    #bg-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      z-index: -1;
-      object-fit: cover;
-    }
+<video autoplay loop id="bg-video" muted>
+  <source src="bg.mp4" type="video/mp4">
+  المتصفح لا يدعم الفيديو.
+</video>
+<canvas id="stars"></canvas>
 
-    /* الطبقة العلوية */
-    .overlay {
-      position: relative;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      background: rgba(0,0,0,0.45);
-      padding: 20px;
-      box-sizing: border-box;
-    }
+<!-- عناصر تحكم -->
+<div class="top-controls">
+  <button id="sound-btn" class="control-btn">🔊 الصوت</button>
+  <button id="toggleBtn" class="control-btn">🌙 الوضع الليلي</button>
+</div>
 
-    h1 {
-      font-size: 3em;
-      margin: 5px 0 10px 0;
-      transition: color 1s ease;
-      letter-spacing: 2px;
-    }
+<div id="page1" class="container">
+  <div class="neon-text">FLAX UI</div>
+  <div class="subtitle">مرحبا بيك في موقع فلكس يو آي ✨<br>اضغط دخول وشوف محتواك</div>
+  <button class="button" onclick="showPage('page2')">🚀 دخول</button>
+</div>
 
-    /* عنوان فرعي انجليزي */
-    .subtitle {
-      font-size: 1.25em;
-      margin: 0;
-      opacity: 0.95;
-    }
+<div id="page2" class="container" style="display:none;">
+  <div class="neon-text">القائمة</div>
+  <div class="buttons-container">
+    <button class="neon-button" onclick="showPage('page3')">📺 الفيديوهات</button>
+    <button class="neon-button" onclick="alert('قريباً ✨')">📱 التطبيقات</button>
+    <button class="neon-button" onclick="alert('قريباً ✨')">📂 الملفات</button>
+    <button class="neon-button" onclick="alert('قريباً ✨')">📰 المقالات</button>
+    <button class="neon-button" onclick="showPage('page8')">📞 تواصل</button>
+  </div>
+  <button class="back-arrow" onclick="goBack('page1')">←</button>
+</div>
 
-    /* سطر عربي */
-    .arabic {
-      direction: rtl;
-      font-size: 1.1em;
-      margin-top: 8px;
-    }
+<div id="page3" class="container" style="display:none;">
+  <div class="neon-text">📺 الفيديوهات</div>
+  <div class="video-grid">
+    <a class="video-card" href="https://youtu.be/vTv46hmZTFs" target="_blank">
+      <img src="https://img.youtube.com/vi/vTv46hmZTFs/hqdefault.jpg">
+      <span>فيديو 1</span>
+    </a>
+    <a class="video-card" href="https://youtu.be/Kz8Im8n4Dg0" target="_blank">
+      <img src="https://img.youtube.com/vi/Kz8Im8n4Dg0/hqdefault.jpg">
+      <span>فيديو 2</span>
+    </a>
+  </div>
+  <button class="back-arrow" onclick="goBack('page2')">←</button>
+</div>
 
-    .description {
-      font-size: 0.95em;
-      margin-top: 10px;
-      max-width: 720px;
-      line-height: 1.4;
-      opacity: 0.95;
-    }
+<div id="page8" class="container" style="display:none;">
+  <div class="neon-text">📞 تواصل</div>
+  <div class="buttons-container">
+    <a class="neon-button" href="https://wa.me/201000000000" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+    <a class="neon-button" href="https://t.me/username" target="_blank"><i class="fab fa-telegram"></i> تليجرام</a>
+    <a class="neon-button" href="https://www.instagram.com/username" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
+  </div>
+  <button class="back-arrow" onclick="goBack('page2')">←</button>
+</div>
+
+<audio id="clickSound" src="click.mp3" preload="auto"></audio>
+
+<script>
+// التحكم في الصفحات
+function showPage(id){
+  document.querySelectorAll('.container').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='flex';
+  playClick();
+}
+function goBack(id){
+  document.querySelectorAll('.container').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='flex';
+  playClick();
+}
+// صوت كليك
+function playClick(){
+  const s=document.getElementById("clickSound");
+  s.currentTime=0;s.play();
+}
+
+// خلفية نجوم
+const canvas=document.getElementById('stars'),ctx=canvas.getContext('2d');
+let stars=[];function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+window.addEventListener('resize',resize);resize();
+for(let i=0;i<150;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5,dx:(Math.random()-0.5)*0.5,dy:(Math.random()-0.5)*0.5});}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="white";
+  stars.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+  s.x+=s.dx;s.y+=s.dy;
+  if(s.x<0||s.x>canvas.width)s.dx*=-1;
+  if(s.y<0||s.y>canvas.height)s.dy*=-1;});
+  requestAnimationFrame(animate);
+}
+animate();
+
+// تحكم في الفيديو والصوت
+const video=document.getElementById("bg-video");
+const soundBtn=document.getElementById("sound-btn");
+soundBtn.addEventListener("click",()=>{
+  if(video.muted){
+    video.muted=false;
+    soundBtn.textContent="🔇 كتم الصوت";
+  }else{
+    video.muted=true;
+    soundBtn.textContent="🔊 الصوت";
+  }
+});
+
+// تبديل الوضع الليلي/النهاري
+function toggleMode(){
+  let body=document.body;
+  body.classList.toggle("dark");
+  body.classList.toggle("light");
+  let btn=document.getElementById("toggleBtn");
+  if(body.classList.contains("dark")) btn.textContent="🌞 النهاري";
+  else btn.textContent="🌙 الليلي";
+}
+document.getElementById("toggleBtn").onclick=toggleMode;
+</script>
+</body>
+</html>    }
 
     .buttons {
       display: flex;
